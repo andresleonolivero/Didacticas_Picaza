@@ -26,8 +26,6 @@
       position: relative;
       width: 100%;
       height: 2000px;
-      background: url('') no-repeat center;
-      background-size: cover;
     }
 
     .modulo {
@@ -97,17 +95,22 @@
     });
 
     async function cargarProgreso() {
-      const doc = await db.collection("usuarios").doc(uid).get();
-      if (doc.exists) {
-        const data = doc.data();
-        for (let i = 1; i <= 10; i++) {
-          const el = document.getElementById("m" + i);
-          if (data["modulo" + i] && data["modulo" + i].puntos !== undefined) {
-            const puntos = data["modulo" + i].puntos;
-            const porcentaje = Math.round((puntos / 5) * 100);
-            el.querySelector(".progreso").textContent = porcentaje + "%";
+      try {
+        const doc = await db.collection("usuarios").doc(uid).get();
+        if (doc.exists) {
+          const data = doc.data();
+          for (let i = 1; i <= 10; i++) {
+            const el = document.getElementById("m" + i);
+            if (data["modulo" + i] && data["modulo" + i].puntos !== undefined) {
+              const puntos = data["modulo" + i].puntos;
+              const porcentaje = Math.round((puntos / 5) * 100);
+              el.querySelector(".progreso").textContent = porcentaje + "%";
+              localStorage.setItem(`modulo${i}_${uid}_puntos`, puntos);
+            }
           }
         }
+      } catch (error) {
+        console.error("Error al cargar el progreso:", error);
       }
     }
   </script>
