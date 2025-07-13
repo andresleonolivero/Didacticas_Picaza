@@ -85,32 +85,41 @@
     const db = firebase.firestore();
 
     let uid = null;
-    firebase.auth().onAuthStateChanged(user => {
+    firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         uid = user.uid;
+        await sincronizarLocalConFirestore();
         cargarProgreso();
       } else {
         window.location.href = "login.html";
       }
     });
 
-    async function cargarProgreso() {
+    async function sincronizarLocalConFirestore() {
       try {
-        const doc = await db.collection("usuarios").doc(uid).get();
+        const docRef = db.collection("usuarios").doc(uid);
+        const doc = await docRef.get();
         if (doc.exists) {
-          const data = doc.data();
+          const datos = doc.data();
           for (let i = 1; i <= 10; i++) {
-            const el = document.getElementById("m" + i);
-            if (data["modulo" + i] && data["modulo" + i].puntos !== undefined) {
-              const puntos = data["modulo" + i].puntos;
-              const porcentaje = Math.round((puntos / 5) * 100);
-              el.querySelector(".progreso").textContent = porcentaje + "%";
-              localStorage.setItem(`modulo${i}_${uid}_puntos`, puntos);
+            if (datos[`modulo${i}`] && datos[`modulo${i}`].puntos !== undefined) {
+              localStorage.setItem(`modulo${i}_${uid}_puntos`, datos[`modulo${i}`].puntos);
             }
           }
         }
-      } catch (error) {
-        console.error("Error al cargar el progreso:", error);
+      } catch (e) {
+        console.error("Error sincronizando progreso:", e);
+      }
+    }
+
+    async function cargarProgreso() {
+      for (let i = 1; i <= 10; i++) {
+        const puntos = localStorage.getItem(`modulo${i}_${uid}_puntos`);
+        if (puntos !== null) {
+          const porcentaje = Math.round((parseInt(puntos) / 5) * 100);
+          const el = document.getElementById("m" + i);
+          el.querySelector(".progreso").textContent = porcentaje + "%";
+        }
       }
     }
   </script>
