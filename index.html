@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Botón de Inicio Interactivo</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .boton-inicio {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: white;
+      padding: 20px 40px;
+      font-size: 24px;
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .boton-inicio::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: skewX(-45deg);
+      transition: 0.5s;
+    }
+
+    .boton-inicio:hover::before {
+      left: 100%;
+    }
+
+    .boton-inicio:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 25px rgba(0,0,0,0.4);
+    }
+
+    .boton-inicio:active {
+      transform: scale(0.95);
+    }
+
+    .pulse-ring {
+      position: absolute;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 50%;
+      transform: scale(0);
+      animation: pulse 1s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="boton-inicio" onclick="animarBoton(event)">
+    Iniciar
+  </button>
+
+  <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-29.mp3" preload="auto"></audio>
+
+  <script>
+    
+    function animarBoton(event) {
+      const boton = event.currentTarget;
+
+      // Reproducir sonido
+      const audio = document.getElementById("clickSound");
+      audio.currentTime = 0;
+      audio.play();
+
+      // Crear animación de pulso
+      const ring = document.createElement("span");
+      ring.classList.add("pulse-ring");
+      ring.style.left = `${event.offsetX}px`;
+      ring.style.top = `${event.offsetY}px`;
+
+      boton.appendChild(ring);
+
+      setTimeout(() => {
+        ring.remove();
+        // Redireccionar a la página de registro después del efecto
+        window.location.href = "registro.html"; // Cambia esto por tu ruta
+      }, 500); // Espera 0.5 segundos antes de redirigir
+    }
+  </script>
+
+</body>
+</html>
